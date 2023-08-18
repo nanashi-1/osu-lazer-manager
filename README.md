@@ -6,30 +6,34 @@ Installs and updates [osu!lazer](https://github.com/ppy/osu-resources) in Linux.
 
 ### Install osu!lazer
 
-    osu-lazer-installer install
+    osu-lazer-manager install
 
 
 If you've used this tool before and it failed, you may want to run:
 
-    osu-lazer-installer install --force
+    osu-lazer-manager install --force
 
 ### Update osu!lazer
 
-    osu-lazer-installer update
+    osu-lazer-manager update
 
 If osu!lazer fails to run after update, run:
 
-    osu-lazer-installer update --force
+    osu-lazer-manager update --force
 
 ### Check installed version
 
-    osu-lazer-installer version
+    osu-lazer-manager version
 
 ### Check latest version
 
-    osu-lazer-installer version --include-latest-version
+    osu-lazer-manager version --include-latest-version
 
 *Note: This will also display the installed version.*
+
+### Uninstall osu!lazer
+
+    osu-lazer-manager uninstall
 
 ## Installation
 
