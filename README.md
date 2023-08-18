@@ -43,6 +43,6 @@ If osu!lazer fails to run after update, run:
 
 ### from Source
 
-    cargo install --git https://github.com/nanashi-1/osu-lazer-installer
+    cargo install --git https://github.com/nanashi-1/osu-lazer-manager
 
 *Note: cargo must be installed in your system*
