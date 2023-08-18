@@ -39,7 +39,7 @@ If osu!lazer fails to run after update, run:
 
 ### Quick Install
 
-*Note: Not yet implemented*
+    wget https://raw.githubusercontent.com/nanashi-1/osu-lazer-manager/master/quick-install.sh && bash quick-install.sh
 
 ### from Source
 
