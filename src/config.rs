@@ -3,7 +3,7 @@ use ini::configparser::ini::Ini;
 use crate::error::Result;
 use std::{fs::metadata, path::PathBuf};
 
-const SECTION: &'static str = "main";
+const SECTION: &str = "main";
 
 #[derive(Clone)]
 pub struct Config {
@@ -28,7 +28,7 @@ impl Config {
 
     /// *Note: Will create a config file if config doesn't exist.*
     pub fn load(config_path: PathBuf) -> Result<Self> {
-        if !metadata(&config_path).is_ok() {
+        if metadata(&config_path).is_err() {
             let config = Self {
                 config_path,
                 ..Default::default()
