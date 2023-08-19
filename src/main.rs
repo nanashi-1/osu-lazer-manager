@@ -13,6 +13,7 @@ mod error;
 mod fetcher;
 mod paths;
 mod printer;
+mod tests;
 
 #[derive(Default, Clone)]
 pub struct Context {
