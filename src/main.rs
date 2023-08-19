@@ -106,7 +106,7 @@ async fn install(context: &mut Context) -> Result<()> {
     let fetcher = Fetcher::new(
         "https://github.com/ppy/osu/releases/latest/download/osu.AppImage",
         &get_path_as_str(paths::Paths::AppImage)?,
-        context.clone(),
+        context.to_owned(),
     );
 
     create_dir_all(get_path(paths::Paths::Manager)?)?;
@@ -173,7 +173,7 @@ async fn update(context: &mut Context) -> Result<()> {
     let fetcher = Fetcher::new(
         "https://github.com/ppy/osu/releases/latest/download/osu.AppImage",
         &get_path_as_str(paths::Paths::AppImage)?,
-        context.clone(),
+        context.to_owned(),
     );
     fetcher.fetch().await?;
 

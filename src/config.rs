@@ -15,7 +15,7 @@ impl Config {
     pub fn save(&self) -> Result<()> {
         let mut ini = Ini::new();
 
-        ini.set(SECTION, "version", Some(self.version.clone()));
+        ini.set(SECTION, "version", Some(self.version.to_owned()));
 
         ini.write(
             self.config_path
