@@ -1,5 +1,8 @@
 # osu-lazer-installer
 
+[![Tests](https://github.com/nanashi-1/osu-lazer-manager/actions/workflows/test.yml/badge.svg)](https://github.com/nanashi-1/osu-lazer-manager/actions/workflows/test.yml)
+[![Code Quality](https://github.com/nanashi-1/osu-lazer-manager/actions/workflows/clippy-check.yml/badge.svg)](https://github.com/nanashi-1/osu-lazer-manager/actions/workflows/clippy-check.yml)
+
 Installs and updates [osu!lazer](https://github.com/ppy/osu-resources) in Linux.
 
 ## Usage
