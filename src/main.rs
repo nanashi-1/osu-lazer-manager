@@ -1,7 +1,4 @@
-use std::{
-    fs::{create_dir_all, metadata, remove_dir, remove_file, write},
-    ops::Deref,
-};
+use std::fs::{create_dir_all, metadata, remove_dir, remove_file, write};
 
 use crate::error::Result;
 use clap::{Parser, Subcommand};
@@ -58,9 +55,8 @@ enum SubCommand {
 
 #[tokio::main]
 async fn main() {
-    match app().await {
-        Ok(_) => {}
-        Err(e) => e.deref().to_string().print_as_error(),
+    if let Err(e) = app().await {
+        e.to_string().print_as_error();
     }
 }
 
@@ -106,7 +102,7 @@ async fn install(context: &mut Context) -> Result<()> {
     let fetcher = Fetcher::new(
         "https://github.com/ppy/osu/releases/latest/download/osu.AppImage",
         &get_path_as_str(paths::Paths::AppImage)?,
-        context.clone(),
+        context.to_owned(),
     );
 
     create_dir_all(get_path(paths::Paths::Manager)?)?;
@@ -173,7 +169,7 @@ async fn update(context: &mut Context) -> Result<()> {
     let fetcher = Fetcher::new(
         "https://github.com/ppy/osu/releases/latest/download/osu.AppImage",
         &get_path_as_str(paths::Paths::AppImage)?,
-        context.clone(),
+        context.to_owned(),
     );
     fetcher.fetch().await?;
 
