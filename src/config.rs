@@ -1,61 +1,40 @@
-use ini::configparser::ini::Ini;
+use crate::{constants::CONFIG, paths::get_directory_path};
+use anyhow::anyhow;
+use serde::{Deserialize, Serialize};
+use std::{fs::write, path::PathBuf};
 
-use crate::error::Result;
-use std::{fs::metadata, path::PathBuf};
-
-const SECTION: &str = "main";
-
-#[derive(Clone)]
-pub struct Config {
-    pub version: String,
-    pub config_path: PathBuf,
+#[derive(Serialize, Deserialize, Default)]
+struct Config {
+    default_version: Option<String>,
 }
 
-impl Config {
-    pub fn save(&self) -> Result<()> {
-        let mut ini = Ini::new();
+fn get_config_path() -> anyhow::Result<PathBuf> {
+    let config_path = get_directory_path()?.join(CONFIG);
 
-        ini.set(SECTION, "version", Some(self.version.to_owned()));
-
-        ini.write(
-            self.config_path
-                .to_str()
-                .ok_or("Error converting path to string slice.")?,
-        )?;
-
-        Ok(())
+    if !config_path.exists() {
+        write(&config_path, toml::to_string(&Config::default())?)?;
     }
 
-    /// *Note: Will create a config file if config doesn't exist.*
-    pub fn load(config_path: PathBuf) -> Result<Self> {
-        if metadata(&config_path).is_err() {
-            let config = Self {
-                config_path,
-                ..Default::default()
-            };
-            Self::save(&config)?;
-            return Ok(config);
-        }
-
-        let mut ini = Ini::new();
-        ini.load(
-            config_path
-                .to_str()
-                .ok_or("Error converting path to string slice.")?,
-        )?;
-
-        Ok(Self {
-            version: ini.get(SECTION, "version").ok_or("Not Installed")?,
-            config_path,
-        })
-    }
+    Ok(config_path)
 }
 
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            version: "Not Installed".into(),
-            config_path: Default::default(),
-        }
+pub fn set_default_version(specific_version: &str) -> anyhow::Result<()> {
+    let config_path = get_config_path()?;
+
+    let mut config: Config = toml::from_str(&std::fs::read_to_string(&config_path)?)?;
+    config.default_version = Some(specific_version.to_string());
+
+    write(config_path, toml::to_string(&config)?)?;
+
+    Ok(())
+}
+
+pub fn get_default_version() -> anyhow::Result<String> {
+    let config_path = get_config_path()?;
+    let config: Config = toml::from_str(&std::fs::read_to_string(config_path)?)?;
+
+    match config.default_version {
+        Some(version) => Ok(version),
+        None => Err(anyhow!("No default version set")),
     }
 }
