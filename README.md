@@ -29,13 +29,14 @@ This major update brings significant improvements and lays the foundation for fu
 
 The recommended way to install the osu!lazer manager is using Cargo. This offers the benefits of package management and ensures a secure installation process.
 
-### Prerequisites
-
-* Cargo package manager ([https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install))
-* cargo-quickinstall
-
 ### Pre-compiled Binaries
 
+**with scripts**
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/axodotdev/cargo-dist/releases/download/v0.16.0/cargo-dist-installer.sh | sh
+```
+
+**with cargo-binstall**
 ```bash
 cargo binstall osu-lazer-manager
 ```
