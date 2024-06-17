@@ -32,6 +32,7 @@ The recommended way to install the osu!lazer manager is using Cargo. This offers
 ### Prerequisites
 
 * Cargo package manager ([https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install))
+* cargo-quickinstall
 
 ### Pre-compiled Binaries
 
