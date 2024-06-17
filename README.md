@@ -1,54 +1,54 @@
 # osu-lazer-installer
 
+![Crates.io Version](https://img.shields.io/crates/v/osu-lazer-manager)
+![MSRV](https://img.shields.io/crates/msrv/osu-lazer-manager)
+![License](https://img.shields.io/crates/l/osu-lazer-manager)
 [![Tests](https://github.com/nanashi-1/osu-lazer-manager/actions/workflows/test.yml/badge.svg)](https://github.com/nanashi-1/osu-lazer-manager/actions/workflows/test.yml)
 
-Installs and updates [osu!lazer](https://github.com/ppy/osu-resources) in Linux.
+osu!lazer Management Tool for Linux
 
-## Usage
+This tool simplifies managing osu!lazer on your Linux system. It lets you:
 
-### Install osu!lazer
+- Install and Update osu!lazer: Easily install new versions or update existing ones.
+- Manage Multiple Versions: Keep different osu!lazer versions handy and switch between them effortlessly.
+- Launch Directly from CLI: No need for extra steps, launch osu!lazer straight from the command line.
+- Desktop Entry Management: Create and update desktop entries for a seamless user experience.
 
-    osu-lazer-manager install
+## What's New in v1.0.0:
 
+This major update brings significant improvements and lays the foundation for future features:
 
-If you've used this tool before and it failed, you may want to run:
-
-    osu-lazer-manager install --force
-
-### Update osu!lazer
-
-    osu-lazer-manager update
-
-If osu!lazer fails to run after update, run:
-
-    osu-lazer-manager update --force
-
-### Check installed version
-
-    osu-lazer-manager version
-
-### Check latest version
-
-    osu-lazer-manager version --include-latest-version
-
-*Note: This will also display the installed version.*
-
-### Uninstall osu!lazer
-
-    osu-lazer-manager uninstall
+- Simplified osu!lazer Launch: Launch osu!lazer directly from the command line with a single command.
+- Multi-Version Support: Manage and switch between multiple osu!lazer versions effortlessly.
+- Code Refactoring: The codebase is now more modular, maintainable, and efficient. It utilizes an internal API, allowing for potential future expansion (like a GUI!).
+- Enhanced Error Handling: Improved error handling with the anyhow crate provides clearer and more informative messages.
+- Flexible Terminal Colors: Leverages the colorize crate for customizable terminal colors, independent of the program itself.
+- Dynamic Desktop Entry Updates: Desktop entries and icons automatically update when changes occur in osu!lazer, eliminating the need for manual tool updates.
 
 ## Installation
 
-### Quick Install
+The recommended way to install the osu!lazer manager is using Cargo. This offers the benefits of package management and ensures a secure installation process.
 
-    wget https://raw.githubusercontent.com/nanashi-1/osu-lazer-manager/master/quick-install.sh && bash quick-install.sh
+### Pre-compiled Binaries
 
-### from Source
+**with scripts**
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/axodotdev/cargo-dist/releases/download/v0.16.0/cargo-dist-installer.sh | sh
+```
 
-    cargo install --git https://github.com/nanashi-1/osu-lazer-manager
+**with cargo-binstall**
+```bash
+cargo binstall osu-lazer-manager
+```
 
-*Note: cargo must be installed in your system*
+### Compile Current Development Version
+
+If you want to try the latest development version before it's published on crates.io, you can install it directly from your local Git repository or a remote one using Cargo's `install` command with the `--git` flag:
+
+```bash
+cargo install --git https://github.com/nanashi-1/osu-lazer-manager
+```
 
 ## License
 
-This repository is licensed under the MIT License.
+This project is licensed under the MIT License. You can find a copy of the license in the [LICENSE](LICENSE) file.

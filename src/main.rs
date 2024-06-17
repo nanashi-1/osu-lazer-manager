@@ -1,32 +1,26 @@
-use std::fs::{create_dir_all, metadata, remove_dir, remove_file, write};
-
-use crate::error::Result;
 use clap::{Parser, Subcommand};
-use config::Config;
-use fetcher::Fetcher;
-use paths::{get_path, get_path_as_str};
-use printer::Printer;
-use scraper::{Html, Selector};
+use colored::Colorize;
+use get_default::get_default;
+use install::install;
+use list::list;
+use run::run;
+use set_default::set_default;
+use uninstall::uninstall;
+use update::update;
 
-mod config;
-mod error;
-mod fetcher;
-mod paths;
-mod printer;
-mod tests;
-
-#[derive(Default, Clone)]
-pub struct Context {
-    pub force: bool,
-    pub include_latest_version: bool,
-    pub config: Config,
-}
+mod get_default;
+mod install;
+mod list;
+mod run;
+mod set_default;
+mod uninstall;
+mod update;
 
 #[derive(Parser)]
-#[command(version = "1", about = "Installs and Updates osu!lazer")]
+#[command(version = "1", about = "Installs and Manages osu!lazer")]
 struct Cli {
     #[command(subcommand)]
-    command: Option<SubCommand>,
+    command: SubCommand,
 }
 
 #[derive(Subcommand)]
@@ -35,196 +29,70 @@ enum SubCommand {
     Install {
         #[clap(short, long, help = "Replace existing files from last install if any")]
         force: bool,
+
+        #[clap(short, long, help = "Set the target version to install", default_value_t = String::from("latest"))]
+        version: String,
+
+        #[clap(short, long, help = "Make the target version the default version")]
+        make_default_version: bool,
+    },
+    #[command(about = "Run osu!lazer")]
+    Run {
+        #[clap(short, long, help = "Set the target version to run", default_value_t = String::from("default"))]
+        version: String,
     },
     #[command(about = "Update osu!lazer")]
     Update {
-        #[clap(short, long, help = "Replace existing files from last install if any")]
+        #[clap(
+            short,
+            long,
+            help = "Do not make the target version the default version"
+        )]
+        do_not_make_default_version: bool,
+        #[clap(short, long, help = "Force install the latest version")]
         force: bool,
     },
-    #[command(about = "Check the version of the currently installed osu!lazer")]
-    Version {
-        #[clap(
-            short = 'g',
-            long,
-            help = "Display both latest version and installed version"
-        )]
-        include_latest_version: bool,
+    #[command(about = "List all installed version")]
+    List,
+    #[command(about = "Set the default version")]
+    SetDefault {
+        #[arg(help = "Set the target version to install")]
+        version: String,
     },
+    #[command(about = "Get the default version")]
+    GetDefault,
     #[command(about = "Uninstall osu!lazer")]
-    Uninstall,
+    Uninstall {
+        #[arg(help = "Set the target version to uninstall", default_value_t = String::from("latest"))]
+        version: String,
+    },
+}
+
+fn print_and_exit_if_err(result: anyhow::Result<()>) {
+    if let Err(e) = result {
+        eprintln!("{}", e.to_string().as_str().red());
+        std::process::exit(1);
+    }
 }
 
 #[tokio::main]
 async fn main() {
-    if let Err(e) = app().await {
-        e.to_string().print_as_error();
-    }
-}
-
-async fn app() -> Result<()> {
     let cli = Cli::parse();
-    let config = Config::load(get_path(paths::Paths::Config)?)?;
 
     match cli.command {
-        Some(SubCommand::Install { force }) => {
-            install(&mut Context {
-                force,
-                config,
-                ..Default::default()
-            })
-            .await?
-        }
-        Some(SubCommand::Update { force }) => {
-            update(&mut Context {
-                force,
-                config,
-                ..Default::default()
-            })
-            .await?
-        }
-        Some(SubCommand::Version {
-            include_latest_version,
-        }) => {
-            version(&Context {
-                include_latest_version,
-                config,
-                ..Default::default()
-            })
-            .await?
-        }
-        Some(SubCommand::Uninstall) => uninstall().or(Err("Cannot uninstall nothing!"))?,
-        None => todo!(),
-    }
-
-    Ok(())
-}
-
-async fn install(context: &mut Context) -> Result<()> {
-    let fetcher = Fetcher::new(
-        "https://github.com/ppy/osu/releases/latest/download/osu.AppImage",
-        &get_path_as_str(paths::Paths::AppImage)?,
-        context.to_owned(),
-    );
-
-    create_dir_all(get_path(paths::Paths::Manager)?)?;
-
-    fetcher.fetch().await?;
-
-    context.config.version = get_latest_version().await?;
-
-    if desktop_file_exists()? && !context.force {
-        return Err(Box::new(std::io::Error::new(
-            std::io::ErrorKind::AlreadyExists,
-            "Desktop file already exists.",
-        )));
-    } else if desktop_file_exists()? && context.force {
-        "Replacing existing desktop file...".print_as_warning();
-    }
-
-    let desktop_content = include_str!("../assets/osu!lazer.desktop")
-        .replace("{appimage}", &get_path_as_str(paths::Paths::AppImage)?)
-        .replace("{icon}", &get_path_as_str(paths::Paths::DesktopIcon)?);
-
-    "Creating desktop file...".print();
-
-    write(get_path(paths::Paths::DesktopFile)?, desktop_content)?;
-
-    "Desktop file created!".print_as_success();
-
-    if desktop_icon_exists()? && !context.force {
-        return Err(Box::new(std::io::Error::new(
-            std::io::ErrorKind::AlreadyExists,
-            "Desktop icon already exists.",
-        )));
-    } else if desktop_icon_exists()? && context.force {
-        "Replacing existing desktop icon...".print_as_warning();
-    }
-
-    let icon_content = include_bytes!("../assets/icon.png");
-
-    "Creating desktop icon...".print();
-
-    write(get_path(paths::Paths::DesktopIcon)?, icon_content)?;
-
-    "Desktop icon created!".print_as_success();
-
-    context.config.save()?;
-
-    "Installation Completed!".print_as_success();
-
-    Ok(())
-}
-
-async fn update(context: &mut Context) -> Result<()> {
-    let online_version = get_latest_version().await?;
-
-    if context.config.version == online_version && !context.force {
-        "Game is up to date!".print_as_warning();
-        return Ok(());
-    } else if context.config.version == online_version && context.force {
-        "Replacing current installation...".print_as_warning();
-    }
-
-    context.force = true;
-
-    let fetcher = Fetcher::new(
-        "https://github.com/ppy/osu/releases/latest/download/osu.AppImage",
-        &get_path_as_str(paths::Paths::AppImage)?,
-        context.to_owned(),
-    );
-    fetcher.fetch().await?;
-
-    context.config.version = get_latest_version().await?;
-    context.config.save()?;
-
-    "Update Complete!".print_as_success();
-
-    Ok(())
-}
-
-async fn version(context: &Context) -> Result<()> {
-    println!("Installed Version: {}", context.config.version);
-
-    if context.include_latest_version {
-        println!("Latest Version: {}", get_latest_version().await?)
-    }
-
-    Ok(())
-}
-
-fn uninstall() -> Result<()> {
-    remove_file(get_path(paths::Paths::AppImage)?)?;
-    remove_file(get_path(paths::Paths::Config)?)?;
-    remove_file(get_path(paths::Paths::DesktopFile)?)?;
-    remove_file(get_path(paths::Paths::DesktopIcon)?)?;
-
-    remove_dir(get_path(paths::Paths::Manager)?)?;
-
-    "Uninstall Complete".print_as_success();
-
-    Ok(())
-}
-
-async fn get_latest_version() -> Result<String> {
-    let body = reqwest::get("https://github.com/ppy/osu/releases/latest")
-        .await?
-        .text()
-        .await?;
-
-    let html = Html::parse_document(&body);
-    let selector = Selector::parse(r#"h1.d-inline.mr-3[data-view-component="true"]"#)?;
-
-    Ok(html
-        .select(&selector)
-        .next()
-        .ok_or("No matches!")?
-        .inner_html())
-}
-
-fn desktop_file_exists() -> Result<bool> {
-    Ok(metadata(get_path(paths::Paths::DesktopFile)?).is_ok())
-}
-
-fn desktop_icon_exists() -> Result<bool> {
-    Ok(metadata(get_path(paths::Paths::DesktopIcon)?).is_ok())
+        SubCommand::Install {
+            force,
+            version,
+            make_default_version,
+        } => print_and_exit_if_err(install(force, &version, make_default_version).await),
+        SubCommand::Run { version } => print_and_exit_if_err(run(&version)),
+        SubCommand::Update {
+            do_not_make_default_version,
+            force,
+        } => print_and_exit_if_err(update(do_not_make_default_version, force).await),
+        SubCommand::List => print_and_exit_if_err(list()),
+        SubCommand::SetDefault { version } => print_and_exit_if_err(set_default(&version).await),
+        SubCommand::GetDefault => print_and_exit_if_err(get_default()),
+        SubCommand::Uninstall { version } => print_and_exit_if_err(uninstall(&version).await),
+    };
 }
