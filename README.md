@@ -1,7 +1,6 @@
 # osu-lazer-installer
 
 ![Crates.io Version](https://img.shields.io/crates/v/osu-lazer-manager)
-![MSRV](https://img.shields.io/crates/msrv/osu-lazer-manager)
 ![License](https://img.shields.io/crates/l/osu-lazer-manager)
 [![Tests](https://github.com/nanashi-1/osu-lazer-manager/actions/workflows/test.yml/badge.svg)](https://github.com/nanashi-1/osu-lazer-manager/actions/workflows/test.yml)
 
