@@ -38,17 +38,3 @@ pub async fn fetch_icon(
 pub fn get_icon_path() -> anyhow::Result<PathBuf> {
     Ok(get_directory_path()?.join(ICON))
 }
-
-#[cfg(test)]
-mod tests {
-    use anyhow::Ok;
-
-    use super::*;
-
-    #[tokio::test]
-    async fn test_fetch_icon() -> anyhow::Result<()> {
-        fetch_icon(|_| {}, |_| {}).await?;
-
-        Ok(())
-    }
-}

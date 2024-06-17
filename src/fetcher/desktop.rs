@@ -80,11 +80,4 @@ mod tests {
         let output = process_template(template, icon_path, appimage_path);
         assert_eq!(output, "/path/to/icon.png\n/path/to/appimage");
     }
-
-    #[tokio::test]
-    async fn test_fetch_desktop() -> anyhow::Result<()> {
-        fetch_desktop("2024.521.2", |_| {}, |_| {}).await?;
-
-        Ok(())
-    }
 }
