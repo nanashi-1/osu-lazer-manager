@@ -1,4 +1,4 @@
-# osu-lazer-installer
+# osu-lazer-manager
 
 ![Crates.io Version](https://img.shields.io/crates/v/osu-lazer-manager)
 ![License](https://img.shields.io/crates/l/osu-lazer-manager)
