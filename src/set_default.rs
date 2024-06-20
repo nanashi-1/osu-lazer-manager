@@ -1,4 +1,4 @@
-use anyhow::Ok;
+use anyhow::{anyhow, Ok};
 use colored::Colorize;
 use osu_lazer_manager::{
     config::set_default_version,
@@ -13,12 +13,15 @@ use std::fs::{read_to_string, write};
 
 pub async fn set_default(version: &str) -> anyhow::Result<()> {
     let version = match version {
-        "latest" => get_latest_version().await?,
+        "latest" => get_latest_version()
+            .await
+            .map_err(|e| anyhow!("Failed to get latest version: {}", e))?,
         _ => version.to_string(),
     };
 
-    set_default_version(&version)?;
-    replace_desktop_version(&version)?;
+    set_default_version(&version).map_err(|e| anyhow!("Failed to set default version: {}", e))?;
+    replace_desktop_version(&version)
+        .map_err(|e| anyhow!("Failed to replace desktop version: {}", e))?;
 
     println!("{}{}", "Set default version: ".green(), version.green());
 

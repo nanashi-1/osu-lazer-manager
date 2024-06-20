@@ -1,4 +1,4 @@
-use anyhow::Ok;
+use anyhow::{anyhow, Ok};
 use colored::Colorize;
 use indicatif::{ProgressBar, ProgressStyle};
 use osu_lazer_manager::{
@@ -7,8 +7,12 @@ use osu_lazer_manager::{
 };
 
 pub async fn fix() -> anyhow::Result<()> {
-    fix_desktop().await?;
-    fix_icon().await?;
+    fix_desktop()
+        .await
+        .map_err(|e| anyhow!("Failed to fix desktop entry: {}", e))?;
+    fix_icon()
+        .await
+        .map_err(|e| anyhow!("Failed to fix desktop icon: {}", e))?;
 
     Ok(())
 }
