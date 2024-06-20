@@ -34,16 +34,24 @@ pub async fn install(
 ) -> anyhow::Result<()> {
     println!("Installing osu!lazer {} version...", version);
 
-    create_missing_directories()?;
+    create_missing_directories().map_err(|e| anyhow!("Failed to create directories: {}", e))?;
 
     let specific_version = match version {
-        "latest" => get_latest_version().await?,
+        "latest" => get_latest_version()
+            .await
+            .map_err(|e| anyhow!("Failed to get latest version: {}", e))?,
         _ => version.to_string(),
     };
 
-    get_appimage(force_install, &specific_version, make_default_version).await?;
-    get_icon().await?;
-    get_desktop(&specific_version, make_default_version).await?;
+    get_appimage(force_install, &specific_version, make_default_version)
+        .await
+        .map_err(|e| anyhow!("Failed to get appimage: {}", e))?;
+    get_icon()
+        .await
+        .map_err(|e| anyhow!("Failed to get icon: {}", e))?;
+    get_desktop(&specific_version, make_default_version)
+        .await
+        .map_err(|e| anyhow!("Failed to get desktop: {}", e))?;
 
     Ok(())
 }
