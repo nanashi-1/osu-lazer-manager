@@ -36,11 +36,13 @@ enum SubCommand {
         #[clap(short, long, help = "Make the target version the default version")]
         make_default_version: bool,
     },
+
     #[command(about = "Run osu!lazer")]
     Run {
         #[clap(short, long, help = "Set the target version to run", default_value_t = String::from("default"))]
         version: String,
     },
+
     #[command(about = "Update osu!lazer")]
     Update {
         #[clap(
@@ -52,15 +54,19 @@ enum SubCommand {
         #[clap(short, long, help = "Force install the latest version")]
         force: bool,
     },
+
     #[command(about = "List all installed version")]
     List,
+
     #[command(about = "Set the default version")]
     SetDefault {
         #[arg(help = "Set the target version to install")]
         version: String,
     },
+
     #[command(about = "Get the default version")]
     GetDefault,
+
     #[command(about = "Uninstall osu!lazer")]
     Uninstall {
         #[arg(help = "Set the target version to uninstall", default_value_t = String::from("latest"))]
