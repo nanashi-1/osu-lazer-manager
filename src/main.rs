@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use colored::Colorize;
+use fix::fix;
 use get_default::get_default;
 use install::install;
 use list::list;
@@ -8,6 +9,7 @@ use set_default::set_default;
 use uninstall::uninstall;
 use update::update;
 
+mod fix;
 mod get_default;
 mod install;
 mod list;
@@ -67,6 +69,11 @@ enum SubCommand {
     #[command(about = "Get the default version")]
     GetDefault,
 
+    #[command(
+        about = "Fix osu!lazer manager files. This will try to fix the desktop entry and the icon."
+    )]
+    Fix,
+
     #[command(about = "Uninstall osu!lazer")]
     Uninstall {
         #[arg(help = "Set the target version to uninstall", default_value_t = String::from("latest"))]
@@ -99,6 +106,7 @@ async fn main() {
         SubCommand::List => print_and_exit_if_err(list()),
         SubCommand::SetDefault { version } => print_and_exit_if_err(set_default(&version).await),
         SubCommand::GetDefault => print_and_exit_if_err(get_default()),
+        SubCommand::Fix => print_and_exit_if_err(fix().await),
         SubCommand::Uninstall { version } => print_and_exit_if_err(uninstall(&version).await),
     };
 }
