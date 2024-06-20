@@ -1,6 +1,6 @@
 [package]
 name = "osu-lazer-manager"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 description = "Manages osu!lazer"
 license = "MIT"

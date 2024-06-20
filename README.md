@@ -13,17 +13,6 @@ This tool simplifies managing osu!lazer on your Linux system. It lets you:
 - Launch Directly from CLI: No need for extra steps, launch osu!lazer straight from the command line.
 - Desktop Entry Management: Create and update desktop entries for a seamless user experience.
 
-## What's New in v1.0.0:
-
-This major update brings significant improvements and lays the foundation for future features:
-
-- Simplified osu!lazer Launch: Launch osu!lazer directly from the command line with a single command.
-- Multi-Version Support: Manage and switch between multiple osu!lazer versions effortlessly.
-- Code Refactoring: The codebase is now more modular, maintainable, and efficient. It utilizes an internal API, allowing for potential future expansion (like a GUI!).
-- Enhanced Error Handling: Improved error handling with the anyhow crate provides clearer and more informative messages.
-- Flexible Terminal Colors: Leverages the colorize crate for customizable terminal colors, independent of the program itself.
-- Dynamic Desktop Entry Updates: Desktop entries and icons automatically update when changes occur in osu!lazer, eliminating the need for manual tool updates.
-
 ## Installation
 
 The recommended way to install the osu!lazer manager is using Cargo. This offers the benefits of package management and ensures a secure installation process.
