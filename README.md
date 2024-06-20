@@ -32,7 +32,7 @@ The recommended way to install the osu!lazer manager is using Cargo. This offers
 
 **with scripts**
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/axodotdev/cargo-dist/releases/download/v0.16.0/cargo-dist-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/nanashi-1/osu-lazer-manager/releases/latest/download/osu-lazer-manager-installer.sh | sh
 ```
 
 **with cargo-binstall**
